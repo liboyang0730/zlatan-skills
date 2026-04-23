@@ -63,13 +63,14 @@ def line_start_index(text, index):
 
 
 def is_markdown_ordered_list_marker(text, index):
-    """判断当前句点是否属于 Markdown 有序列表标记。"""
+    """判断当前句点是否属于 Markdown 有序列表标记（支持行首有空格的缩进列表）。"""
     if text[index] != ".":
         return False
 
     start = line_start_index(text, index)
     prefix = text[start:index]
-    stripped = prefix.lstrip(" ")
+    # 去掉行首空格后，剩余部分必须全为数字
+    stripped = prefix.lstrip(" \t")
     return bool(stripped) and stripped.isdigit()
 
 

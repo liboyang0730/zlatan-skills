@@ -1,2 +1,3 @@
 # zlatan-skills
-Not noly for work, but also for life.
+Only for myself.
+For reference only.
