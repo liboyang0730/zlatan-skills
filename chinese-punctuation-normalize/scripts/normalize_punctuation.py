@@ -86,8 +86,9 @@ def should_convert_punctuation(text, index):
     if char == "." and is_markdown_ordered_list_marker(text, index):
         return False
 
-    # 保护文件名/扩展名：.data、.md、.obd 等（. 后面紧跟英文字母）
-    if char == "." and next_char.isalpha():
+    # 保护文件名/扩展名：.data、.md、.obd 等（. 后面紧跟 ASCII 字母）
+    # 注意：只保护 ASCII 字母，中文字符后的 . 仍应转换
+    if char == "." and next_char.isascii() and next_char.isalpha():
         return False
 
     if char == ":" and prev_char.isdigit() and next_char.isdigit():
@@ -100,7 +101,7 @@ def should_convert_punctuation(text, index):
 
 
 def convert_basic_punctuation(text):
-    """按上下文转换半角标点。"""
+    """按上下文转换半角标点，括号使用栈保持配对一致。"""
     punctuation_map = {
         ",": "，",
         ".": "。",
@@ -108,13 +109,26 @@ def convert_basic_punctuation(text):
         "?": "？",
         "!": "！",
         ";": "；",
-        "(": "（",
-        ")": "）",
     }
 
     result = []
+    # 括号栈：记录每个左括号的类型（'zh' 或 'en'）
+    bracket_stack = []
+
     for index, char in enumerate(text):
-        if char in punctuation_map and should_convert_punctuation(text, index):
+        if char in ("(", "（"):
+            # 统一判断：中文语境用中文括号，否则用英文括号
+            if char == "（" or should_convert_punctuation(text, index):
+                result.append("（")
+                bracket_stack.append("zh")
+            else:
+                result.append("(")
+                bracket_stack.append("en")
+        elif char in (")", "）"):
+            # 根据对应左括号类型决定右括号形式，修正不匹配的情况
+            bracket_type = bracket_stack.pop() if bracket_stack else ("zh" if char == "）" else "en")
+            result.append("）" if bracket_type == "zh" else ")")
+        elif char in punctuation_map and should_convert_punctuation(text, index):
             result.append(punctuation_map[char])
         else:
             result.append(char)
