@@ -85,6 +85,10 @@ def should_convert_punctuation(text, index):
     if char == "." and is_markdown_ordered_list_marker(text, index):
         return False
 
+    # 保护文件名/扩展名：.data、.md、.obd 等（. 后面紧跟英文字母）
+    if char == "." and next_char.isalpha():
+        return False
+
     if char == ":" and prev_char.isdigit() and next_char.isdigit():
         return False
 

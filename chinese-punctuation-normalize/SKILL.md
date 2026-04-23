@@ -64,7 +64,8 @@ python scripts/normalize_punctuation.py <文件路径> --in-place
 5. **英文句子**：整句英文保持英文标点
 6. **专有名词、品牌名称**：如 iPhone、macOS
 7. **数字**：小数点、千分位保持英文（3.14、1,000）
-8. **Markdown 格式标记**：表格的 \| 和 --- 等
+8. **文件名/扩展名中的点**：`.` 后面紧跟英文字母时不转换，如 `.data`、`.md`、`.obd`、`.gitignore` 等
+9. **Markdown 格式标记**：表格的 \| 和 --- 等
 9. **在 md 文件中表示链接的英文括号**：例如：[link](https://platform.openai.com/tokenizer) 中的括号保持英文括号不变。
 10. **已经存在的合理空格**：不重复插入多个连续空格
 
